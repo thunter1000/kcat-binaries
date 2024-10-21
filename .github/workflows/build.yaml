@@ -1,0 +1,26 @@
+name: Build
+
+on: [ workflow_dispatch, push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:stable-slim
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build KCat
+      run: |
+        apt update && apt install -y git curl wget build-essential zlib1g-dev liblz4-dev libssl-dev libsasl2-dev python3 cmake libcurl4-openssl-dev pkg-config libssl3 libsasl2-2 ca-certificates curl jq
+        git clone https://github.com/edenhill/kcat.git
+        cd kcat
+        ./bootstrap.sh
+        cd ../
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: KCat
+        path: kcat/kcat
